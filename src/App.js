@@ -16,17 +16,23 @@ const App = () => {
   }, [])
 
   const findPrinters = () => {
-    qz.printers.find().then(data => console.log(data)
-    )
+    qz.printers.find().then(data => console.log(data))
+  }
+
+  const printAndOpen = () => {
+    const config = qz.configs.create("EPSON TM-U675 Receipt")
+    const data = [ '27,112,0,25,250' ];
+   qz.print(config, data).catch(function(e) { console.error(e); });
   }
 
   return (
     <div className="App">
       <header className="App-header">
-        <button onClick={() => {findPrinters()}}>~~~*Click Here*~~~</button>
+        <button onClick={() => {printAndOpen()}}>~~~*Click Here*~~~</button>
       </header>
     </div>
   );
 }
 
 export default App;
+// EPSON TM-U675 Receipt

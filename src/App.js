@@ -1,23 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
 import './App.css';
+import sha256 from 'js-sha256';
+const qz = require('qz-tray');
 
-function App() {
+const App = () => {
+  useEffect(() => {
+    qz.api.setPromiseType(function promise(resolver) { return new Promise(resolver); });
+    qz.api.setSha256Type(data => sha256(data));
+
+    qz.websocket.connect()
+      .then(() => {
+        qz.printers.find();
+      })
+      .then((printers) => {
+        console.log(printers);
+      })
+  }, [])
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        Howdy
       </header>
     </div>
   );

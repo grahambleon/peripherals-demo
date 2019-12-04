@@ -4,23 +4,26 @@ import sha256 from 'js-sha256';
 const qz = require('qz-tray');
 
 const App = () => {
-  useEffect(() => {
-    qz.api.setPromiseType(function promise(resolver) { return new Promise(resolver); });
-    qz.api.setSha256Type(data => sha256(data));
+  qz.api.setSha256Type(function(data) { return sha256(data); });
+  qz.api.setPromiseType(function promise(resolver) { return new Promise(resolver); });
 
+  useEffect(() => {
     qz.websocket.connect()
-      .then(() => {
-        qz.printers.find();
-      })
-      .then((printers) => {
-        console.log(printers);
-      })
+    .then(qz.printers.find)
+    .then((printers) => {
+       console.log(printers);
+    })
   }, [])
+
+  const findPrinters = () => {
+    qz.printers.find().then(data => console.log(data)
+    )
+  }
 
   return (
     <div className="App">
       <header className="App-header">
-        Howdy
+        <button onClick={() => {findPrinters()}}>~~~*Click Here*~~~</button>
       </header>
     </div>
   );

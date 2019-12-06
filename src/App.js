@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import sha256 from 'js-sha256';
+import AcctInput from './AcctInput.js'
 const qz = require('qz-tray');
 
 const App = () => {
@@ -9,10 +10,12 @@ const App = () => {
 
   useEffect(() => {
     qz.websocket.connect()
-    // const findPrinters = () => {
-    //   qz.printers.find().then(data => console.log(data))
-    // }
   }, [])
+
+  const listPrinters = () => {
+    qz.printers.find().then(printers => console.log(printers)
+    )
+  }
 
   const openDrawer = () => {
     const config = qz.configs.create("EPSON TM-U675 Receipt")
@@ -22,10 +25,17 @@ const App = () => {
    qz.print(config, data).catch((e) => console.error(e));
   }
 
-  const printSomething = () => {
+  const printReceipt = () => {
     const config = qz.configs.create("EPSON TM-U675 Receipt")
     const data = [
-      { type: 'raw', data: 'Print me pls \n\n\n\n\n\n\n\n', options: { language: 'ESCPOS', dotDensity: 'single' }},
+      '\x1B\x40',          // init
+      '\x1B\x61\x31', // center align
+      'This is a test\x0A',
+      '\x0A',
+      'Don\'t forget plenty of line breaks at the end.\x0A',
+      '\x0A\x0A\x0A\x0A\x0A\x0A\x0A',
+      '\x0A\x0A\x0A\x0A\x0A\x0A\x0A',
+      '\x1B\x69', // cut
   ];
    qz.print(config, data).catch((e) => console.error(e));
   }
@@ -33,17 +43,29 @@ const App = () => {
   const validateSlip = () => {
     const config = qz.configs.create("EPSON TM-U675 Slip")
     const data = [
-      { type: 'raw', format: 'hex', data: 'x1Bx57'},
+      '\x1B\x63\x30\x04',
+      '\x1B\x61\x31', // center align
+      '\x0A\x0A\x0A\x0A\x0A\x0A\x0A',
+      '\x0A\x0A\x0A\x0A\x0A\x0A\x0A',
+      'This is a test\x0A',
+      '\x0A',
+      'Don\'t forget plenty of line breaks at the end.\x0A',
+      '\x0A\x0A\x0A\x0A\x0A\x0A\x0A',
+      '\x0A\x0A\x0A\x0A\x0A\x0A\x0A',
+      '\x1B\x69', // cut
   ];
    qz.print(config, data).catch((e) => console.error(e));
   }
 
+
   return (
     <div className="App">
       <header className="App-header">
+        <AcctInput />
         <button onClick={() => {openDrawer()}}>Open</button>
-        <button onClick={() => {printSomething()}}>Print</button>
+        <button onClick={() => {printReceipt()}}>Print</button>
         <button onClick={() => {validateSlip()}}>Validate</button>
+        <button onClick={() => {listPrinters()}}>List Printers</button>
       </header>
     </div>
   );
